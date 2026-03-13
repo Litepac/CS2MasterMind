@@ -1,0 +1,12 @@
+{
+  "name": "skybox-light",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace @skybox-light/web run dev",
+    "build:web": "npm --workspace @skybox-light/web run build",
+    "lint:web": "npm --workspace @skybox-light/web run lint"
+  }
+}

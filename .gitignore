@@ -1,0 +1,27 @@
+# Node / Next
+node_modules/
+.next/
+dist/
+build/
+
+# Local temp / caches
+.tmp/
+.cache/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Logs
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Large local demo artifacts
+*.dem
+*.viewer.json
+
+# Generated legacy reports
+legacy-prototype/output/
