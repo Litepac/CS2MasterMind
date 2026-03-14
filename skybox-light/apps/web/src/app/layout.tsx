@@ -2,8 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Skybox Light",
-  description: "Local-first CS2 demo analysis"
+  title: "Litepac's Mastermind",
+  description: "Local-first CS2 demo review and replay workspace"
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

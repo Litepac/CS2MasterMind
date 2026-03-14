@@ -23,6 +23,14 @@ Thumbs.db
 # Large local demo artifacts
 *.dem
 *.viewer.json
+*.mastermind.replay.json
 
 # Generated legacy reports
 legacy-prototype/output/
+
+# Local parser / replay worktrees
+demoinfocs-parser/
+mastermind-go/bin/
+mastermind-go/output/
+skybox-light/incoming-demos/*
+!skybox-light/incoming-demos/.gitkeep

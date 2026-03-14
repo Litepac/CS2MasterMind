@@ -1,8 +1,9 @@
 import { createHash, randomUUID } from "node:crypto";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { enrichMatchSummary } from "@/lib/match-enrichment";
 import type { MatchSummary, PlayerSummary } from "@/lib/types";
+import { ensureIncomingDemosDir, incomingDemosDir } from "@/lib/workspace-paths";
 
 type ParserPlayer = {
   name?: string;
@@ -43,7 +44,7 @@ function parseScoreFromPlayers(players: PlayerSummary[]) {
   return `${ctRounds}-${tRounds}`;
 }
 
-export function normalizeParserSummary(summary: ParserSummary, fileName: string): MatchSummary {
+export function normalizeParserSummary(summary: ParserSummary, fileName: string, sourcePath?: string): MatchSummary {
   const players: PlayerSummary[] = (summary.players || []).map((player, index) => ({
     id: player.steam || `${summary.id || "parser"}-${index}`,
     name: player.name || `Player ${index + 1}`,
@@ -61,6 +62,7 @@ export function normalizeParserSummary(summary: ParserSummary, fileName: string)
   return enrichMatchSummary({
     id: summary.id || `parser_${fallbackId}`,
     demoName: summary.demo_name || fileName,
+    sourcePath,
     mapName: summary.map || "unknown_map",
     score: parseScoreFromPlayers(players),
     rounds: summary.rounds || 0,
@@ -72,32 +74,28 @@ export function normalizeParserSummary(summary: ParserSummary, fileName: string)
   });
 }
 
-async function writeUploadedDemo(file: File) {
-  const uploadDir = path.join(process.cwd(), ".tmp", "uploads");
-  await mkdir(uploadDir, { recursive: true });
+export async function writeUploadedDemo(file: File) {
+  await ensureIncomingDemosDir();
 
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const localName = `${Date.now()}-${randomUUID()}-${safeName}`;
-  const localPath = path.join(uploadDir, localName);
+  const localPath = path.join(incomingDemosDir, localName);
   const buffer = Buffer.from(await file.arrayBuffer());
 
   await writeFile(localPath, buffer);
   return localPath;
 }
 
-export async function tryParseWithService(file: File): Promise<MatchSummary | null> {
+export async function tryParseWithServicePath(demoPath: string, fileName: string): Promise<MatchSummary | null> {
   const parserBaseUrl = process.env.PARSER_SERVICE_URL || "http://127.0.0.1:8081";
-  let localPath: string | null = null;
 
   try {
-    localPath = await writeUploadedDemo(file);
-
     const response = await fetch(`${parserBaseUrl}/parse`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ demoPath: localPath }),
+      body: JSON.stringify({ demoPath }),
       cache: "no-store"
     });
 
@@ -106,12 +104,13 @@ export async function tryParseWithService(file: File): Promise<MatchSummary | nu
     }
 
     const payload = (await response.json()) as ParserSummary;
-    return normalizeParserSummary(payload, file.name);
+    return normalizeParserSummary(payload, fileName, demoPath);
   } catch {
     return null;
-  } finally {
-    if (localPath) {
-      await rm(localPath, { force: true }).catch(() => undefined);
-    }
   }
+}
+
+export async function tryParseWithService(file: File): Promise<MatchSummary | null> {
+  const localPath = await writeUploadedDemo(file);
+  return tryParseWithServicePath(localPath, file.name);
 }

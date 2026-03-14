@@ -1,8 +1,9 @@
 import { enrichMatchSummary } from "@/lib/match-enrichment";
 import type { MatchSummary } from "@/lib/types";
-import { mockMatches } from "@/lib/mock-data";
 
 const STORAGE_KEY = "skybox-light.matches";
+const STORAGE_VERSION_KEY = "skybox-light.storage-version";
+const STORAGE_VERSION = "2";
 
 function dedupe(matches: MatchSummary[]) {
   const byId = new Map<string, MatchSummary>();
@@ -15,23 +16,31 @@ function dedupe(matches: MatchSummary[]) {
 }
 
 export function getStoredMatches(): MatchSummary[] {
-  if (typeof window === "undefined") return mockMatches;
+  if (typeof window === "undefined") return [];
 
   try {
+    const version = window.localStorage.getItem(STORAGE_VERSION_KEY);
+    if (version !== STORAGE_VERSION) {
+      window.localStorage.removeItem(STORAGE_KEY);
+      window.localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION);
+      return [];
+    }
+
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const parsed = raw ? (JSON.parse(raw) as MatchSummary[]) : [];
-    return dedupe([...parsed, ...mockMatches]);
+    return dedupe(parsed.filter((match) => match.source !== "mock"));
   } catch {
-    return mockMatches;
+    return [];
   }
 }
 
 export function saveParsedMatch(match: MatchSummary) {
   if (typeof window === "undefined") return;
 
-  const current = getStoredMatches().filter((item) => !mockMatches.some((mock) => mock.id === item.id));
+  const current = getStoredMatches();
   const next = dedupe([enrichMatchSummary(match), ...current]);
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  window.localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION);
 }
 
 export function getMatchById(matchId: string): MatchSummary | null {

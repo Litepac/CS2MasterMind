@@ -1,4 +1,4 @@
-# Skybox Light
+# Litepac's Mastermind
 
 Local-first CS2 demo analysis platform.
 
@@ -17,6 +17,8 @@ V1 focuses on:
 - `services/parser-go`: Go parser service
 - `infra`: local infrastructure such as Postgres
 - `docs`: architecture notes and contracts
+- `plans.md`: active project plan and status board
+- `incoming-demos`: canonical local folder for uploaded source demos and replay JSON files
 
 ## Local Setup
 
@@ -39,14 +41,29 @@ npm install
 npm run dev
 ```
 
+Optional but recommended for DEM parsing:
+
+Create `apps/web/.env.local` and point the app to the same Python you use manually:
+
+```powershell
+Copy-Item .env.local.example .env.local
+```
+
+Then edit `apps/web/.env.local`:
+
+```text
+PYTHON_EXECUTABLE=C:\Users\rasmu\AppData\Local\Programs\Python\Python312\python.exe
+```
+
 4. Use the current ingest flow:
 
 - Open `http://localhost:3000`
 - Click `Select Demo`
-- Choose a `.dem` file
+- Choose a `.dem` or `.viewer.json` file
 - Click `Parse Demo`
 
 This hits the internal Next.js ingest route at `app/api/ingest`.
+Every file is copied into `skybox-light/incoming-demos`, so there is one stable place for local source files.
 
 5. Run the parser service:
 
@@ -58,7 +75,8 @@ go run ./cmd/parser
 ## Notes
 
 - The parser service is scaffolded as a clean boundary. It does not yet parse real demos.
-- The web ingest route now tries `parser-go` first by writing the uploaded `.dem` to a temporary local file and POSTing its path to the parser service.
-- If the parser service is not running, ingest falls back to mock data so the UI remains usable.
-- The UI shows the current data source as either `parser-go` or `mock`.
+- The web ingest route stores every uploaded file in `incoming-demos` before parsing.
+- `.viewer.json` import is the most stable replay path right now.
+- `.dem` parsing should use the same Python runtime as the legacy workflow. Set `PYTHON_EXECUTABLE` in `apps/web/.env.local` to your working Python 3.12 path.
 - The existing prototype in the parent repo can be used as reference for events and replay concepts.
+- Project progress and active priorities are tracked in `plans.md`.

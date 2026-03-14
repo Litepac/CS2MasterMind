@@ -1,0 +1,350 @@
+﻿<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Litepac's Mastermind Viewer</title>
+<style>
+:root{--bg:#061019;--panel:#0d1824;--line:#1d3042;--text:#eef5fb;--muted:#86a0b7;--accent:#20e1bb;--ct:#63cfff;--t:#f1a55f;--kill:#ff6a5b;--smoke:#d6dde5;--flash:#ffe48a;--he:#ff8b61;--molotov:#ff944e;--bomb:#80e8a1;--dead:rgba(110,126,141,.45);--shadow:0 18px 40px rgba(0,0,0,.28)}*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:linear-gradient(180deg,#08121b 0%,#061019 100%);color:var(--text);font:14px/1.4 system-ui,Segoe UI,Arial,sans-serif}button,input{font:inherit}.app{display:grid;grid-template-columns:240px minmax(0,1fr) 320px;grid-template-rows:auto 1fr auto;height:100vh}.sidebar,.top,.stage-card,.score-card,.rounds-card,.inspector,.timeline{background:linear-gradient(180deg,var(--panel),#0a141e);border:1px solid var(--line);box-shadow:var(--shadow)}.sidebar{grid-row:1/4;margin:16px 0 16px 16px;border-radius:18px;padding:18px 16px;display:grid;grid-template-rows:auto auto auto 1fr;gap:18px}.brand{font-size:20px;font-weight:800;line-height:1.05}.brand small{display:block;margin-top:8px;color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase}.section-title{margin:0 0 10px;color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase}.legend,.filters,.meta-stack,.round-list,.roster{display:grid;gap:8px}.legend-row,.filter-row,.roster-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.swatch{width:11px;height:11px;border-radius:999px;flex:0 0 auto}.legend-row span:last-child{flex:1;color:#c8d7e4}.filter-row label{display:flex;align-items:center;gap:10px;color:#d7e4ef}.meta-card,.stat,.event-card,.round-btn,.roster-row{border:1px solid var(--line);border-radius:14px;padding:12px;background:rgba(255,255,255,.02)}.eyebrow{color:var(--muted);font-size:10px;letter-spacing:.16em;text-transform:uppercase}.value{margin-top:6px;font-size:18px;font-weight:700}.top{grid-column:2/4;margin:16px 16px 0;border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:14px}.top-meta{display:flex;gap:14px;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}.top-meta strong{color:var(--text)}.grow{flex:1}.btn{border:1px solid var(--line);border-radius:10px;background:linear-gradient(180deg,#152636,#0b141e);color:var(--text);padding:8px 12px;cursor:pointer}.btn:hover{border-color:var(--accent);color:var(--accent)}.main{grid-column:2/3;padding:16px;display:grid;grid-template-columns:290px minmax(0,1fr);grid-template-rows:auto 1fr;gap:16px;min-width:0;min-height:0}.score-card{border-radius:18px;padding:16px;display:grid;gap:14px}.score-grid{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px}.divider{width:1px;height:100%;background:var(--line)}.team-label{color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase}.score{font-size:52px;font-weight:800;line-height:1}.score.ct{color:var(--ct)}.score.t{color:var(--t)}.rounds-card{border-radius:18px;padding:14px;overflow:auto}.round-btn{text-align:left;cursor:pointer;background:#0b1520}.round-btn.active,.round-btn:hover{border-color:var(--accent);background:#112030}.round-btn .topline,.round-btn .bottomline{display:flex;justify-content:space-between;gap:10px}.round-btn .topline{font-size:12px;margin-bottom:6px}.round-btn .bottomline{font-size:11px;color:var(--muted)}.stage-card{grid-column:2/3;grid-row:1/3;border-radius:18px;padding:14px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;min-width:0;min-height:0}.stage-head{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.canvas-wrap{position:relative;min-height:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#050c13}canvas{width:min(100%,calc(100vh - 290px));height:min(100%,calc(100vh - 290px));max-width:100%;max-height:100%;aspect-ratio:1;display:block}.stage-badge{position:absolute;top:14px;left:14px;border:1px solid var(--line);border-radius:999px;background:rgba(6,16,25,.88);padding:8px 10px;font-size:11px;letter-spacing:.12em;text-transform:uppercase}.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:32px;text-align:center;color:var(--muted)}.controls{display:grid;gap:10px}.scrub-row,.btn-row{display:flex;align-items:center;gap:10px}.timecode{width:58px;color:var(--accent);font-size:12px;text-align:center}#scrub{flex:1;accent-color:var(--accent)}.inspector{grid-column:3/4;grid-row:2/3;margin:16px 16px 0 0;border-radius:18px;padding:16px;display:grid;grid-template-rows:auto auto 1fr;gap:14px;min-height:0}.event-card .title{font-size:24px;font-weight:800}.event-card .sub{margin-top:6px;color:var(--muted)}.roster{overflow:auto}.roster-name{font-weight:700}.roster-meta{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.14em}.timeline{grid-column:2/4;margin:0 16px 16px;border-radius:18px;padding:14px 16px;display:grid;gap:12px}.timeline-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}.timeline-title{font-size:18px;font-weight:700}.timeline-sub{color:var(--muted);font-size:12px}.lane{display:grid;grid-template-columns:68px minmax(0,1fr);gap:10px;align-items:center}.lane-label{color:var(--muted);font-size:10px;letter-spacing:.18em;text-transform:uppercase}.track{position:relative;height:28px;border:1px solid var(--line);border-radius:999px;background:#09131d;overflow:hidden}.band,.mark{position:absolute;top:0;bottom:0}.band{opacity:.22;border-right:1px solid rgba(255,255,255,.05)}.band.ct{background:var(--ct)}.band.t{background:var(--t)}.mark{top:5px;bottom:5px;width:8px;border-radius:999px;transform:translateX(-50%);cursor:pointer}.mark.kill{background:var(--kill)}.mark.smoke{background:var(--smoke)}.mark.flash{background:var(--flash)}.mark.he{background:var(--he)}.mark.molotov{background:var(--molotov)}.mark.plant,.mark.defuse,.mark.explode{background:var(--bomb)}.mark.active{outline:2px solid #fff;outline-offset:2px}@media (max-width:1400px){.app{grid-template-columns:220px minmax(0,1fr)}.top,.timeline{grid-column:2/3}.inspector{grid-column:2/3;grid-row:auto;margin:0 16px 16px}.main{grid-template-columns:260px minmax(0,1fr)}}@media (max-width:1080px){.app{grid-template-columns:1fr;grid-template-rows:auto auto 1fr auto auto}.sidebar{display:none}.top,.main,.timeline,.inspector{grid-column:auto;margin-left:16px;margin-right:16px}.main{grid-template-columns:1fr;grid-template-rows:auto auto auto}.stage-card{grid-column:auto;grid-row:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar"><div class="brand">Litepac's Mastermind<small>Replay Core</small></div><section><h2 class="section-title">Legend</h2><div class="legend" id="legend"></div></section><section><h2 class="section-title">Filters</h2><div class="filters" id="filters"></div></section><section class="meta-stack"><div class="meta-card"><div class="eyebrow">Source</div><div class="value" id="sourcePath">No file loaded</div></div><div class="meta-card"><div class="eyebrow">Map</div><div class="value" id="mapMeta">-</div></div></section></aside>
+<header class="top"><div class="top-meta"><span><strong id="metaMap">No map</strong></span><span><strong id="metaDemo">No demo</strong></span><span><strong id="metaRounds">0 rounds</strong></span><span><strong id="metaFrames">0 frames</strong></span></div><div class="grow"></div><button class="btn" id="loadBtn">Load Replay JSON</button><input id="fileInput" type="file" accept=".json" hidden></header>
+<main class="main"><section class="score-card"><div class="score-grid"><div><div class="team-label">CT</div><div class="score ct" id="ctScore">0</div></div><div class="divider"></div><div style="text-align:right"><div class="team-label">T</div><div class="score t" id="tScore">0</div></div></div><div class="meta-stack"><div class="meta-card"><div class="eyebrow">Round</div><div class="value" id="roundValue">-</div></div><div class="meta-card"><div class="eyebrow">Phase</div><div class="value" id="phaseValue">Idle</div></div><div class="meta-card"><div class="eyebrow">Selected Event</div><div class="value" id="selectedValue">None</div></div></div></section><section class="rounds-card"><h2 class="section-title">Rounds</h2><div class="round-list" id="roundList"></div></section><section class="stage-card"><div class="stage-head"><div class="stat"><div class="eyebrow">Winner</div><div class="value" id="winnerValue">-</div></div><div class="stat"><div class="eyebrow">Reason</div><div class="value" id="reasonValue">-</div></div><div class="stat"><div class="eyebrow">Kills</div><div class="value" id="killsValue">0</div></div><div class="stat"><div class="eyebrow">Utility</div><div class="value" id="utilityValue">0</div></div></div><div class="canvas-wrap"><canvas id="mapCanvas" width="1024" height="1024"></canvas><div class="stage-badge" id="stageBadge">No replay loaded</div><div class="empty" id="emptyState">Load a <code>.mastermind.replay.json</code> file to inspect real rounds, kills, utility and player positions.</div></div><div class="controls"><div class="scrub-row"><div class="timecode" id="timeNow">00:00</div><input id="scrub" type="range" min="0" max="0" value="0"><div class="timecode" id="timeEnd">00:00</div></div><div class="btn-row"><button class="btn" id="backRound">Prev Round</button><button class="btn" id="backFrame">-1</button><button class="btn" id="playBtn">Play</button><button class="btn" id="forwardFrame">+1</button><button class="btn" id="nextRound">Next Round</button></div></div></section></main>
+<aside class="inspector"><section><h2 class="section-title">Current Event</h2><div class="event-card"><div class="title" id="eventTitle">None</div><div class="sub" id="eventSub">Load replay data and pick a round or event.</div></div></section><section><h2 class="section-title">Tick</h2><div class="event-card"><div class="title" id="tickTitle">0</div><div class="sub" id="tickSub">Frame 0</div></div></section><section style="min-height:0"><h2 class="section-title">Roster</h2><div class="roster" id="roster"></div></section></aside>
+<section class="timeline"><div class="timeline-head"><div><div class="timeline-title">Timeline</div><div class="timeline-sub">Round bands, kills and utility directly from <code>mastermind.replay.json</code>.</div></div><div class="timeline-sub" id="timelineMeta">0 events</div></div><div class="lane"><div class="lane-label">Rounds</div><div class="track" id="roundTrack"></div></div><div class="lane"><div class="lane-label">Kills</div><div class="track" id="killTrack"></div></div><div class="lane"><div class="lane-label">Utility</div><div class="track" id="utilityTrack"></div></div></section>
+</div>
+<script>
+const UI={loadBtn:document.getElementById("loadBtn"),fileInput:document.getElementById("fileInput"),metaMap:document.getElementById("metaMap"),metaDemo:document.getElementById("metaDemo"),metaRounds:document.getElementById("metaRounds"),metaFrames:document.getElementById("metaFrames"),ctScore:document.getElementById("ctScore"),tScore:document.getElementById("tScore"),roundValue:document.getElementById("roundValue"),phaseValue:document.getElementById("phaseValue"),selectedValue:document.getElementById("selectedValue"),sourcePath:document.getElementById("sourcePath"),mapMeta:document.getElementById("mapMeta"),roundList:document.getElementById("roundList"),winnerValue:document.getElementById("winnerValue"),reasonValue:document.getElementById("reasonValue"),killsValue:document.getElementById("killsValue"),utilityValue:document.getElementById("utilityValue"),stageBadge:document.getElementById("stageBadge"),emptyState:document.getElementById("emptyState"),canvas:document.getElementById("mapCanvas"),scrub:document.getElementById("scrub"),playBtn:document.getElementById("playBtn"),backFrame:document.getElementById("backFrame"),forwardFrame:document.getElementById("forwardFrame"),backRound:document.getElementById("backRound"),nextRound:document.getElementById("nextRound"),timeNow:document.getElementById("timeNow"),timeEnd:document.getElementById("timeEnd"),eventTitle:document.getElementById("eventTitle"),eventSub:document.getElementById("eventSub"),tickTitle:document.getElementById("tickTitle"),tickSub:document.getElementById("tickSub"),roster:document.getElementById("roster"),roundTrack:document.getElementById("roundTrack"),killTrack:document.getElementById("killTrack"),utilityTrack:document.getElementById("utilityTrack"),timelineMeta:document.getElementById("timelineMeta"),legend:document.getElementById("legend"),filters:document.getElementById("filters")};
+const COLORS={ct:"#63cfff",t:"#f1a55f",kill:"#ff6a5b",smoke:"#d6dde5",flash:"#ffe48a",he:"#ff8b61",molotov:"#ff944e",plant:"#80e8a1",defuse:"#80e8a1",explode:"#80e8a1",dead:"rgba(110,126,141,.45)",labelBg:"rgba(2,7,12,.86)"};
+const LEGEND=[["ct","CT players"],["t","T players"],["kill","Kill events"],["smoke","Smoke duration"],["flash","Flash detonation"],["he","HE detonation"],["molotov","Molotov duration"],["plant","Bomb events"]];
+const FILTER_KEYS=["kill","smoke","flash","he","molotov","plant","defuse","explode"];
+const state={data:null,rounds:[],frames:[],frameIndex:0,selectedEvent:null,selectedPlayerId:null,playing:false,playTimer:null,filters:new Set(FILTER_KEYS),radarImage:null,radarStatus:"idle",radarUrl:"",radarBounds:null,speed:1};
+const fmtTime=s=>{s=Math.max(0,Math.floor(s));return `${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`};
+const currentFrame=()=>state.frames[state.frameIndex]||null;
+const currentTick=()=>currentFrame()?.tick||0;
+const currentRound=()=>{
+  const t=currentTick();
+  const inside=state.rounds.find(r=>t>=r.startTick&&t<=r.endTick);
+  if(inside)return inside;
+  const previous=state.rounds.filter(r=>r.startTick<=t).sort((a,b)=>b.number-a.number)[0];
+  return previous||state.rounds[0]||null;
+};
+const currentPhase=()=>{
+  const t=currentTick();
+  const round=currentRound();
+  if(!round)return"Idle";
+  if(t>=round.startTick&&t<=round.endTick)return"Live";
+  const next=state.rounds.find(r=>r.number===round.number+1);
+  if(next&&t>round.endTick&&t<next.startTick)return"Freeze";
+  if(t<round.startTick)return"Freeze";
+  return"End";
+};
+const teamColor=side=>side==="ct"?COLORS.ct:side==="t"?COLORS.t:COLORS.dead;
+function frameIndexAtOrAfterTick(targetTick){
+  const idx=state.frames.findIndex(f=>f.tick>=targetTick);
+  return idx>=0?idx:state.frames.length-1;
+}
+function normalizePlaybackPosition(){
+  if(!state.frames.length||!state.rounds.length)return;
+  const tick=currentTick();
+  const firstRound=state.rounds[0];
+  if(tick<firstRound.startTick){
+    state.frameIndex=frameIndexAtOrAfterTick(firstRound.startTick);
+    return;
+  }
+  const round=currentRound();
+  if(!round)return;
+  const next=state.rounds.find(r=>r.number===round.number+1);
+  if(next&&tick>round.endTick&&tick<next.startTick){
+    state.frameIndex=frameIndexAtOrAfterTick(next.startTick);
+  }
+}
+function loadRadarImage(mapName){
+  state.radarImage=null;
+  state.radarStatus="idle";
+  state.radarUrl="";
+  state.radarBounds=null;
+  if(!mapName)return;
+  const normalized=String(mapName).toLowerCase();
+  const url=
+    `https://raw.githubusercontent.com/2mlml/cs2-radar-images/master/${normalized}.png`;
+  state.radarStatus="loading";
+  state.radarUrl=url;
+  const img=new Image();
+  img.crossOrigin="anonymous";
+  img.onload=()=>{
+    state.radarImage=img;
+    state.radarBounds=detectRadarBounds(img);
+    state.radarStatus="loaded";
+    draw();
+    renderHeader();
+  };
+  img.onerror=()=>{state.radarImage=null;state.radarStatus="error";state.radarBounds=null;draw();renderHeader();};
+  img.src=url;
+}
+function detectRadarBounds(img){
+  const canvas=document.createElement("canvas");
+  canvas.width=img.naturalWidth||img.width;
+  canvas.height=img.naturalHeight||img.height;
+  const ctx=canvas.getContext("2d",{willReadFrequently:true});
+  ctx.drawImage(img,0,0);
+  const image=ctx.getImageData(0,0,canvas.width,canvas.height);
+  const {data,width,height}=image;
+  let minX=width,minY=height,maxX=0,maxY=0,found=false;
+  for(let y=0;y<height;y++){
+    for(let x=0;x<width;x++){
+      const alpha=data[(y*width+x)*4+3];
+      if(alpha<10)continue;
+      found=true;
+      if(x<minX)minX=x;
+      if(y<minY)minY=y;
+      if(x>maxX)maxX=x;
+      if(y>maxY)maxY=y;
+    }
+  }
+  if(!found)return{left:0,top:0,width:1,height:1};
+  return {
+    left:minX/width,
+    top:minY/height,
+    width:Math.max(0.001,(maxX-minX)/width),
+    height:Math.max(0.001,(maxY-minY)/height),
+  };
+}
+function projectPoint(nx,ny,size){
+  const b=state.radarBounds||{left:0,top:0,width:1,height:1};
+  return {
+    x:(b.left + nx*b.width)*size,
+    y:(b.top + ny*b.height)*size,
+  };
+}
+function renderLegend(){UI.legend.innerHTML=LEGEND.map(([k,l])=>`<div class="legend-row"><span class="swatch" style="background:${COLORS[k]}"></span><span>${l}</span></div>`).join("")}
+function renderFilters(){UI.filters.innerHTML=FILTER_KEYS.map(k=>`<div class="filter-row"><label><input type="checkbox" data-filter="${k}" ${state.filters.has(k)?"checked":""}><span>${k}</span></label></div>`).join("");UI.filters.querySelectorAll("[data-filter]").forEach(el=>el.addEventListener("change",()=>{const k=el.dataset.filter;if(el.checked)state.filters.add(k);else state.filters.delete(k);renderTimeline();draw()}))}
+function roundStartIndex(round){return state.frames.findIndex(f=>f.tick>=round.startTick)}
+function renderRoundList(){UI.roundList.innerHTML=state.rounds.map(r=>`<button class="round-btn ${currentRound()?.number===r.number?"active":""}" data-round="${r.number}"><div class="topline"><span>R${r.number}</span><span>${r.scoreCT}-${r.scoreT}</span></div><div class="bottomline"><span>${r.winnerSide||"-"}</span><span>${r.winReason||"-"}</span></div></button>`).join("");UI.roundList.querySelectorAll("[data-round]").forEach(b=>b.addEventListener("click",()=>{const round=state.rounds.find(r=>r.number===Number(b.dataset.round));if(!round)return;const idx=roundStartIndex(round);if(idx>=0){state.frameIndex=idx;state.selectedEvent={kind:"round",round:round.number};stopPlayback();renderAll()}}))}
+function aggregateTimelineEvents(items,gap){
+  const sorted=items.slice().sort((a,b)=>a.tick-b.tick);
+  const groups=[];
+  for(const item of sorted){
+    const last=groups[groups.length-1];
+    if(last&&last.key===item.key&&Math.abs(item.tick-last.tick)<=gap){
+      last.items.push(item);
+      last.tick=Math.round((last.tick*(last.items.length-1)+item.tick)/last.items.length);
+      continue;
+    }
+    groups.push({key:item.key,tick:item.tick,items:[item]});
+  }
+  return groups;
+}
+function describeCurrentEvent(){
+  if(!state.data)return{title:"None",sub:"Load replay data and pick a round or event."};
+  if(state.selectedEvent?.kind==="kill"){
+    const e=state.selectedEvent.source;
+    return{title:`${e.attacker} -> ${e.victim}`,sub:`${e.weapon||"-"} at tick ${e.tick}`};
+  }
+  if(state.selectedEvent?.kind&&state.selectedEvent?.source){
+    const e=state.selectedEvent.source;
+    return{title:(e.type||state.selectedEvent.kind).toUpperCase(),sub:`Round ${e.round} at tick ${e.tick}`};
+  }
+  const r=currentRound();
+  if(!r)return{title:"None",sub:"Load replay data and pick a round or event."};
+  const phase=currentPhase();
+  if(phase==="Freeze")return{title:`Round ${r.number} break`,sub:`Freeze/intermission after ${r.winnerSide||"-"} by ${r.winReason||"-"}`};
+  return{title:`Round ${r.number}`,sub:`${r.winnerSide||"-"} by ${r.winReason||"-"}`};
+}
+function renderHeader(){
+  const r=currentRound(),tick=currentTick();
+  UI.metaMap.textContent=state.data?.mapName||"No map";
+  UI.metaDemo.textContent=state.data?.demoName||"No demo";
+  UI.metaRounds.textContent=`${state.rounds.length} rounds`;
+  UI.metaFrames.textContent=`${state.frames.length} frames`;
+  UI.sourcePath.textContent=state.data?.sourcePath||"No file loaded";
+  if(state.data?.map){
+    const radarState=state.radarStatus==="loaded"?"radar ready":state.radarStatus==="loading"?"loading radar":state.radarStatus==="error"?"radar unavailable":"";
+    UI.mapMeta.textContent=`${state.data.mapName} • ${state.data.map.size}px${radarState?` • ${radarState}`:""}`;
+  }else{
+    UI.mapMeta.textContent=state.data?.mapName||"Unknown";
+  }
+  UI.ctScore.textContent=r?.scoreCT??0;
+  UI.tScore.textContent=r?.scoreT??0;
+  UI.roundValue.textContent=r?`R${r.number}`:"-";
+  UI.phaseValue.textContent=currentPhase();
+  UI.selectedValue.textContent=state.selectedEvent?state.selectedEvent.kind:"None";
+  UI.winnerValue.textContent=r?.winnerSide||"-";
+  UI.reasonValue.textContent=r?.winReason||"-";
+  UI.killsValue.textContent=r?state.data.kills.filter(k=>k.round===r.number).length:0;
+  UI.utilityValue.textContent=r?state.data.utility.filter(u=>u.round===r.number).length:0;
+  UI.stageBadge.textContent=r?`R${r.number} • tick ${tick}`:"No replay loaded";
+  UI.timeNow.textContent=fmtTime(tick/64);
+  UI.timeEnd.textContent=fmtTime((state.frames[state.frames.length-1]?.tick||0)/64);
+  UI.tickTitle.textContent=String(tick);
+  UI.tickSub.textContent=`Frame ${state.frameIndex+1}/${state.frames.length||0}`;
+  const ev=describeCurrentEvent();
+  UI.eventTitle.textContent=ev.title;
+  UI.eventSub.textContent=ev.sub;
+}
+function frameDurationMs(index){
+  if(index<0||index>=state.frames.length-1)return 1000/state.speed;
+  const cur=state.frames[index];
+  const next=state.frames[index+1];
+  const deltaTicks=Math.max(1,(next?.tick||cur.tick)-cur.tick);
+  const tickRate=64;
+  return Math.max(80,Math.min(1500,(deltaTicks/tickRate)*1000/state.speed));
+}
+function renderRoster(){
+if(!state.data){UI.roster.innerHTML="";return}
+const frame=currentFrame();
+const playersById=new Map(state.data.players.map(p=>[p.id,p]));
+const players=(frame?.players||[]).slice().sort((a,b)=>{const pa=playersById.get(a.playerId),pb=playersById.get(b.playerId);return (pa?.side||"").localeCompare(pb?.side||"")||(pa?.name||"").localeCompare(pb?.name||"")});
+UI.roster.innerHTML=players.map(fp=>{
+const p=playersById.get(fp.playerId);
+const isActive=state.selectedPlayerId===fp.playerId;
+const hp=fp.health??0;
+return `<div class="roster-row" data-player="${fp.playerId}" style="${isActive?"border-color:var(--accent);background:#112030":""}"><div style="display:flex;align-items:center;gap:10px"><span class="swatch" style="background:${teamColor(p?.side)}"></span><div><div class="roster-name">${p?.name||fp.playerId}</div><div class="roster-meta">${p?.side||"-"} • ${fp.alive?"alive":"dead"} • ${hp} hp</div></div></div></div>`
+}).join("");
+UI.roster.querySelectorAll("[data-player]").forEach(el=>el.addEventListener("click",()=>{
+  const id=el.dataset.player;
+  state.selectedPlayerId=state.selectedPlayerId===id?null:id;
+  renderAll();
+}));
+}
+function renderTimeline(){
+UI.roundTrack.innerHTML="";
+UI.killTrack.innerHTML="";
+UI.utilityTrack.innerHTML="";
+if(!state.data||!state.frames.length){UI.timelineMeta.textContent="0 events";return}
+const total=state.frames[state.frames.length-1].tick||1;
+const visibleUtility=state.data.utility.filter(u=>state.filters.has(u.type));
+const aggregatedUtility=aggregateTimelineEvents([
+  ...visibleUtility.map(e=>({key:e.type,tick:e.tick,source:e})),
+  ...state.data.bombEvents.filter(e=>state.filters.has(e.type)).map(e=>({key:e.type,tick:e.tick,source:e}))
+], 160);
+UI.timelineMeta.textContent=`${state.data.kills.length + aggregatedUtility.length} visible events`;
+for(const r of state.rounds){
+  const band=document.createElement("div");
+  band.className=`band ${r.winnerSide||""}`;
+  band.style.left=`${(r.startTick/total)*100}%`;
+  band.style.width=`${Math.max(.4,((r.endTick-r.startTick)/total)*100)}%`;
+  band.title=`Round ${r.number}`;
+  band.addEventListener("click",()=>{const idx=roundStartIndex(r);if(idx>=0){state.frameIndex=idx;state.selectedEvent={kind:"round",round:r.number};stopPlayback();renderAll()}});
+  UI.roundTrack.appendChild(band);
+}
+for(const kill of state.data.kills){
+  if(!state.filters.has("kill"))continue;
+  const mark=document.createElement("div");
+  mark.className=`mark kill ${state.selectedEvent?.source===kill?"active":""}`;
+  mark.style.left=`${(kill.tick/total)*100}%`;
+  mark.title=`${kill.attacker} -> ${kill.victim}`;
+  mark.addEventListener("click",()=>{jumpToTick(kill.tick);state.selectedEvent={kind:"kill",source:kill};renderAll()});
+  UI.killTrack.appendChild(mark);
+}
+for(const item of aggregatedUtility){
+  const mark=document.createElement("div");
+  const source=item.items[0].source;
+  mark.className=`mark ${item.key} ${state.selectedEvent?.source===source?"active":""}`;
+  mark.style.left=`${(item.tick/total)*100}%`;
+  mark.title=item.items.length>1?`${item.key} x${item.items.length}`:item.key;
+  mark.addEventListener("click",()=>{jumpToTick(item.tick);state.selectedEvent={kind:item.key,source};renderAll()});
+  UI.utilityTrack.appendChild(mark);
+}
+}
+function draw(){
+const c=UI.canvas,ctx=c.getContext("2d"),size=1024;
+ctx.clearRect(0,0,size,size);
+ctx.fillStyle="#09131d";
+ctx.fillRect(0,0,size,size);
+if(state.radarImage){
+  ctx.drawImage(state.radarImage,0,0,size,size);
+  ctx.fillStyle="rgba(4,9,14,.28)";
+  ctx.fillRect(0,0,size,size);
+}else{
+  ctx.fillStyle="rgba(255,255,255,.015)";
+  ctx.fillRect(0,0,size,size);
+}
+ctx.strokeStyle="rgba(255,255,255,.04)";
+ctx.lineWidth=1;
+const b=state.radarBounds||{left:0,top:0,width:1,height:1};
+for(let i=0;i<=8;i++){
+  const px=(b.left + (b.width/8)*i)*size;
+  const py=(b.top + (b.height/8)*i)*size;
+  ctx.beginPath();ctx.moveTo(px,b.top*size);ctx.lineTo(px,(b.top+b.height)*size);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(b.left*size,py);ctx.lineTo((b.left+b.width)*size,py);ctx.stroke();
+}
+if(!state.data)return;
+drawUtility(ctx,size);
+drawPlayers(ctx,size)
+}
+function drawUtility(ctx,size){
+const tick=currentTick(),round=currentRound();
+if(!round)return;
+for(const e of state.data.utility){
+  if(e.round!==round.number||!state.filters.has(e.type)||tick<e.tick||(e.endTick&&tick>e.endTick))continue;
+  const point=projectPoint(e.x,e.y,size);
+  const x=Math.max(0,Math.min(size,point.x)),y=Math.max(0,Math.min(size,point.y));
+  if(e.type==="smoke"){
+    ctx.beginPath();ctx.arc(x,y,24,0,Math.PI*2);ctx.fillStyle="rgba(214,221,229,.24)";ctx.fill();ctx.strokeStyle="rgba(255,255,255,.18)";ctx.stroke()
+  }else if(e.type==="molotov"){
+    ctx.beginPath();ctx.arc(x,y,22,0,Math.PI*2);ctx.fillStyle="rgba(255,148,78,.22)";ctx.fill();ctx.strokeStyle="rgba(255,194,120,.26)";ctx.stroke()
+  }else{
+    ctx.beginPath();ctx.arc(x,y,8,0,Math.PI*2);ctx.fillStyle=COLORS[e.type]||"#fff";ctx.fill()
+  }
+}
+}
+function drawPlayers(ctx,size){
+const frame=currentFrame();
+if(!frame)return;
+const playersById=new Map(state.data.players.map(p=>[p.id,p]));
+for(const fp of frame.players){
+  const p=playersById.get(fp.playerId),point=projectPoint(fp.x,fp.y,size),x=Math.max(14,Math.min(size-14,point.x)),y=Math.max(14,Math.min(size-14,point.y));
+  const isFocused=state.selectedPlayerId===fp.playerId;
+  const dim=Boolean(state.selectedPlayerId)&&!isFocused;
+  const col=fp.alive?teamColor(p?.side):COLORS.dead;
+  ctx.globalAlpha=dim?0.28:1;
+  ctx.beginPath();ctx.arc(x,y,isFocused?16:13,0,Math.PI*2);ctx.fillStyle="rgba(0,0,0,.54)";ctx.fill();
+  ctx.beginPath();ctx.arc(x,y,isFocused?11.5:9.5,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();
+  ctx.lineWidth=isFocused?3:2;ctx.strokeStyle=isFocused?"rgba(255,255,255,.85)":"rgba(255,255,255,.18)";ctx.stroke();
+  if(!state.selectedPlayerId||isFocused){
+    ctx.font=isFocused?"13px Segoe UI":"12px Segoe UI";
+    ctx.textAlign="center";
+    const label=p?.name||fp.playerId,m=ctx.measureText(label),pad=6,w=m.width+pad*2,h=18,preferAbove=y>36,bx=Math.max(0,Math.min(size-w,x-w/2)),by=preferAbove?Math.max(0,y-32):Math.min(size-h,y+14);
+    ctx.fillStyle=COLORS.labelBg;ctx.fillRect(bx,by,w,h);
+    ctx.fillStyle="#fff";ctx.fillText(label,bx+w/2,by+13);
+  }
+}
+ctx.globalAlpha=1;
+}
+function renderAll(){normalizePlaybackPosition();renderRoundList();renderHeader();renderRoster();renderTimeline();draw();UI.scrub.max=Math.max(0,state.frames.length-1);UI.scrub.value=String(state.frameIndex);UI.emptyState.style.display=state.data?"none":"flex"}
+function jumpToTick(tick){const i=state.frames.findIndex(f=>f.tick>=tick);if(i>=0)state.frameIndex=i;normalizePlaybackPosition()}
+function stopPlayback(){
+state.playing=false;
+UI.playBtn.textContent="Play";
+if(state.playTimer){clearTimeout(state.playTimer);state.playTimer=null;}
+}
+function step(delta){state.frameIndex=Math.max(0,Math.min(state.frames.length-1,state.frameIndex+delta));renderAll()}
+function schedulePlayback(){
+  if(!state.playing)return;
+  if(state.frameIndex>=state.frames.length-1){stopPlayback();return;}
+  const delay=frameDurationMs(state.frameIndex);
+  state.playTimer=setTimeout(()=>{
+    if(!state.playing)return;
+    state.frameIndex+=1;
+    normalizePlaybackPosition();
+    renderAll();
+    schedulePlayback();
+  },delay);
+}
+function togglePlayback(){
+  if(!state.frames.length)return;
+  state.playing=!state.playing;
+  UI.playBtn.textContent=state.playing?"Pause":"Play";
+  if(state.playing)schedulePlayback();
+  else stopPlayback();
+}
+function normalizeData(raw){return{...raw,rounds:Array.isArray(raw.rounds)?raw.rounds.slice():[],frames:Array.isArray(raw.frames)?raw.frames.slice().sort((a,b)=>a.tick-b.tick):[],kills:Array.isArray(raw.kills)?raw.kills:[],utility:Array.isArray(raw.utility)?raw.utility:[],bombEvents:Array.isArray(raw.bombEvents)?raw.bombEvents.map(e=>({...e,type:e.type==="bomb_exploded"?"explode":e.type})):[],players:Array.isArray(raw.players)?raw.players:[]}}
+async function loadReplay(file){const raw=JSON.parse(await file.text());state.data=normalizeData(raw);state.rounds=state.data.rounds;state.frames=state.data.frames;state.frameIndex=0;state.selectedEvent=null;state.selectedPlayerId=null;loadRadarImage(state.data.mapName);stopPlayback();renderAll()}
+UI.loadBtn.addEventListener("click",()=>UI.fileInput.click());UI.fileInput.addEventListener("change",async e=>{const f=e.target.files?.[0];if(!f)return;try{await loadReplay(f)}catch(err){alert(`Could not load replay JSON: ${err.message}`)}});UI.scrub.addEventListener("input",()=>{state.frameIndex=Number(UI.scrub.value||0);normalizePlaybackPosition();renderAll()});UI.playBtn.addEventListener("click",togglePlayback);UI.backFrame.addEventListener("click",()=>{stopPlayback();step(-1)});UI.forwardFrame.addEventListener("click",()=>{stopPlayback();step(1)});UI.backRound.addEventListener("click",()=>{const r=currentRound();if(!r)return;const prev=state.rounds.find(x=>x.number===r.number-1);if(!prev)return;stopPlayback();const idx=roundStartIndex(prev);if(idx>=0){state.frameIndex=idx;state.selectedEvent={kind:"round",round:prev.number};renderAll()}});UI.nextRound.addEventListener("click",()=>{const r=currentRound();if(!r)return;const next=state.rounds.find(x=>x.number===r.number+1);if(!next)return;stopPlayback();const idx=roundStartIndex(next);if(idx>=0){state.frameIndex=idx;state.selectedEvent={kind:"round",round:next.number};renderAll()}});renderLegend();renderFilters();
+</script>
+</body>
+</html>

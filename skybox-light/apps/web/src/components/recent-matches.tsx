@@ -10,7 +10,7 @@ type RecentMatchesProps = {
 
 export function RecentMatches({ matches }: RecentMatchesProps) {
   return (
-    <div className="rounded-[24px] border border-line bg-panel/90 p-4">
+    <div className="rounded-[20px] border border-line bg-panel/90 p-3">
       <div className="flex items-center justify-between gap-3">
         <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-slate-500">
           Recent Matches
@@ -19,26 +19,23 @@ export function RecentMatches({ matches }: RecentMatchesProps) {
           {matches.length} stored
         </div>
       </div>
-      <div className="mt-3 text-xl font-bold">
-        Recent Matches
-      </div>
-      <div className="mt-4 space-y-2.5">
+      <div className="mt-3 space-y-2">
         {matches.map((match) => (
           <Link
             key={match.id}
-            className="block rounded-[18px] border border-line bg-ink/80 p-4 transition hover:border-accent/40 hover:bg-ink"
+            className="block rounded-[14px] border border-line bg-ink/80 p-3 transition hover:border-accent/40 hover:bg-ink"
             href={`/matches/${match.id}` as Route}
           >
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xl font-bold">{match.mapName}</div>
-                <div className="mt-2 inline-flex rounded-full border border-line bg-black/30 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">
+                <div className="text-lg font-bold">{match.mapName}</div>
+                <div className="mt-1 inline-flex rounded-full border border-line bg-black/30 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] text-slate-400">
                   {match.source}
                 </div>
               </div>
-              <div className="text-xl font-bold text-accent">{match.score}</div>
+              <div className="text-lg font-bold text-accent">{match.score}</div>
             </div>
-            <div className="mt-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
+            <div className="mt-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">
               <span>{match.rounds} rounds</span>
               <span>{new Date(match.uploadedAt).toLocaleString()}</span>
             </div>

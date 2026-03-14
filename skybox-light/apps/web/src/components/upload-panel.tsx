@@ -1,7 +1,19 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { MatchSummary } from "@/lib/types";
+
+type IngestJob = {
+  id: string;
+  status: "queued" | "processing" | "completed" | "failed";
+  error?: string;
+  detail?: string;
+  summary?: MatchSummary;
+};
+
+type IngestResponse =
+  | { mode: "completed"; job: IngestJob; summary: MatchSummary }
+  | { mode: "queued"; job: IngestJob };
 
 type UploadPanelProps = {
   onParsed: (summary: MatchSummary) => void;
@@ -12,22 +24,52 @@ export function UploadPanel({ onParsed }: UploadPanelProps) {
   const [selectedDemo, setSelectedDemo] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [job, setJob] = useState<IngestJob | null>(null);
 
   const selectedLabel = useMemo(() => {
     if (!selectedDemo) {
       return {
-        title: "Drop `.dem` file here",
+        title: "Drop `.dem` or `.viewer.json` here",
         copy:
-          "This is the first real ingest step. Choose a demo locally and push it through the internal ingest route."
+          "Use `.viewer.json` for the most reliable path right now. Every upload is copied into `skybox-light/incoming-demos` before parsing."
       };
     }
 
     const sizeMb = (selectedDemo.size / 1024 / 1024).toFixed(1);
     return {
       title: selectedDemo.name,
-      copy: `Ready to ingest. Local file size ${sizeMb} MB.`
+      copy: `Ready to ingest. Local file size ${sizeMb} MB. A stable copy will be stored in skybox-light/incoming-demos.`
     };
   }, [selectedDemo]);
+
+  useEffect(() => {
+    if (!job || job.status === "completed" || job.status === "failed") {
+      return undefined;
+    }
+
+    const timer = window.setInterval(async () => {
+      try {
+        const response = await fetch(`/api/ingest/${job.id}`, { cache: "no-store" });
+        if (!response.ok) return;
+        const next = (await response.json()) as IngestJob;
+        setJob(next);
+
+        if (next.status === "completed" && next.summary) {
+          onParsed(next.summary);
+          setLoading(false);
+        }
+
+        if (next.status === "failed") {
+          setError(next.detail || next.error || "Parsing failed");
+          setLoading(false);
+        }
+      } catch {
+        // Keep polling until status is terminal.
+      }
+    }, 1500);
+
+    return () => window.clearInterval(timer);
+  }, [job, onParsed]);
 
   async function handleParse() {
     if (!selectedDemo) return;
@@ -49,23 +91,31 @@ export function UploadPanel({ onParsed }: UploadPanelProps) {
         throw new Error(payload?.error || "Ingest failed");
       }
 
-      const summary = (await response.json()) as MatchSummary;
-      onParsed(summary);
+      const payload = (await response.json()) as IngestResponse;
+
+      if (payload.mode === "completed") {
+        setJob(payload.job);
+        onParsed(payload.summary);
+        setLoading(false);
+        return;
+      }
+
+      setJob(payload.job);
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Unknown ingest error");
-    } finally {
+      setJob(null);
       setLoading(false);
     }
   }
 
   return (
-    <div className="rounded-[24px] border border-line bg-panel/90 p-4">
+    <div className="rounded-[20px] border border-line bg-panel/90 p-3">
       <div className="flex items-center justify-between gap-4">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-slate-500">
             Demo Upload
           </div>
-          <h2 className="mt-2 text-xl font-bold">Local ingest queue</h2>
+          <h2 className="mt-1 text-lg font-bold">Local ingest queue</h2>
         </div>
         <div className="flex gap-3">
           <button
@@ -87,7 +137,7 @@ export function UploadPanel({ onParsed }: UploadPanelProps) {
         <input
           ref={inputRef}
           hidden
-          accept=".dem"
+          accept=".dem,.json,.viewer.json"
           type="file"
           onChange={(event) => {
             const file = event.target.files?.[0] ?? null;
@@ -98,19 +148,23 @@ export function UploadPanel({ onParsed }: UploadPanelProps) {
       </div>
 
       <button
-        className="mt-4 block w-full rounded-[20px] border border-dashed border-line bg-ink/70 px-6 py-8 text-center transition hover:border-accent/40 hover:bg-ink/90"
+        className="mt-3 block w-full rounded-[16px] border border-dashed border-line bg-ink/70 px-4 py-6 text-center transition hover:border-accent/40 hover:bg-ink/90"
         onClick={() => inputRef.current?.click()}
         type="button"
       >
-        <div className="text-lg font-semibold">{selectedLabel.title}</div>
-        <div className="mt-2 text-sm text-slate-400">{selectedLabel.copy}</div>
+        <div className="text-base font-semibold">{selectedLabel.title}</div>
+        <div className="mt-2 text-xs text-slate-400">{selectedLabel.copy}</div>
       </button>
 
-      <div className="mt-4 flex items-center justify-between gap-4">
-        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
-          {selectedDemo ? "Selected locally" : "No demo selected"}
+      <div className="mt-3 flex items-center justify-between gap-4">
+        <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">
+          {job && job.status !== "completed" && job.status !== "failed"
+            ? `Job ${job.status}`
+            : selectedDemo
+              ? "Stored in incoming-demos on ingest"
+              : "No demo selected"}
         </div>
-        {error ? <div className="text-sm text-red-300">{error}</div> : null}
+        {error ? <div className="max-w-[65%] text-xs text-red-300">{error}</div> : null}
       </div>
     </div>
   );

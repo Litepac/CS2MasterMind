@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Shell } from "@/components/shell";
 import { RecentMatches } from "@/components/recent-matches";
+import { ParserReadinessPanel } from "@/components/parser-readiness";
 import { UploadPanel } from "@/components/upload-panel";
 import { getStoredMatches, saveParsedMatch } from "@/lib/match-store";
 import type { MatchSummary } from "@/lib/types";
@@ -29,14 +30,15 @@ export default function HomePage() {
 
   return (
     <Shell>
-      <div className="grid gap-4">
-        <section className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
+      <div className="grid gap-3">
+        <section className="grid gap-3 xl:grid-cols-[1.05fr_0.5fr_0.75fr]">
           <UploadPanel onParsed={handleParsed} />
+          <ParserReadinessPanel />
           <RecentMatches matches={matches} />
         </section>
 
-        <section className="grid gap-4 xl:grid-cols-[0.92fr_1.08fr]">
-          <div className="rounded-[24px] border border-line bg-panel/90 p-4">
+        <section className="grid gap-3 xl:grid-cols-[0.95fr_1.05fr]">
+          <div className="rounded-[20px] border border-line bg-panel/90 p-3">
             <div className="flex items-center justify-between gap-3">
               <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-slate-500">
                 Last Parse
@@ -45,26 +47,30 @@ export default function HomePage() {
                 Local control room
               </div>
             </div>
-            <div className="mt-3 text-xl font-bold">Newest ingest snapshot</div>
-            <div className="mt-1 text-sm text-slate-400">
+            <div className="mt-2 text-lg font-bold">Newest ingest snapshot</div>
+            <div className="mt-1 text-xs text-slate-400">
               Parse a demo, validate the source, then jump straight into the match report.
             </div>
             {parsedMatch ? (
-              <div className="mt-4 space-y-3">
-                <div className="rounded-[20px] border border-line bg-ink/80 p-4">
+              <div className="mt-3 space-y-3">
+                <div className="rounded-[16px] border border-line bg-ink/80 p-3">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <div className="text-2xl font-bold">{parsedMatch.mapName}</div>
-                      <div className="mt-1 font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                      <div className="text-xl font-bold">{parsedMatch.mapName}</div>
+                      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">
                         {parsedMatch.demoName}
                       </div>
-                      <div className="mt-3 inline-flex rounded-full border border-line bg-black/30 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-slate-300">
-                        {parsedMatch.source === "parser-go" ? "Parser service" : "Mock fallback"}
+                      <div className="mt-2 inline-flex rounded-full border border-line bg-black/30 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] text-slate-300">
+                        {parsedMatch.source === "legacy-python"
+                          ? "Legacy Python replay"
+                          : parsedMatch.source === "parser-go"
+                            ? "Parser service"
+                            : "Mock fallback"}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-accent">{parsedMatch.score}</div>
-                      <div className="mt-1 font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                      <div className="text-xl font-bold text-accent">{parsedMatch.score}</div>
+                      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">
                         {parsedMatch.rounds} rounds
                       </div>
                     </div>
@@ -80,36 +86,44 @@ export default function HomePage() {
                 </div>
 
                 <div className="grid gap-3 md:grid-cols-3">
-                  <div className="rounded-[20px] border border-line bg-ink/80 p-4">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
+                  <div className="rounded-[16px] border border-line bg-ink/80 p-3">
+                    <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">
                       Source
                     </div>
-                    <div className="mt-2 text-xl font-bold capitalize">{parsedMatch.source}</div>
+                    <div className="mt-1 text-lg font-bold capitalize">{parsedMatch.source}</div>
                   </div>
-                  <div className="rounded-[20px] border border-line bg-ink/80 p-4">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
+                  <div className="rounded-[16px] border border-line bg-ink/80 p-3">
+                    <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">
                       Ticks
                     </div>
-                    <div className="mt-2 text-xl font-bold">{parsedMatch.ticks}</div>
+                    <div className="mt-1 text-lg font-bold">{parsedMatch.ticks}</div>
                   </div>
-                  <div className="rounded-[20px] border border-line bg-ink/80 p-4">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
+                  <div className="rounded-[16px] border border-line bg-ink/80 p-3">
+                    <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">
                       Parsed at
                     </div>
-                    <div className="mt-2 text-base font-bold">
+                    <div className="mt-1 text-sm font-bold">
                       {new Date(parsedMatch.uploadedAt).toLocaleString()}
                     </div>
                   </div>
                 </div>
+                {parsedMatch.sourcePath ? (
+                  <div className="rounded-[16px] border border-line bg-ink/80 p-3">
+                    <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">
+                      Saved source path
+                    </div>
+                    <div className="mt-1 break-all font-mono text-[10px] text-slate-300">{parsedMatch.sourcePath}</div>
+                  </div>
+                ) : null}
               </div>
             ) : (
-              <div className="mt-4 rounded-2xl border border-dashed border-line bg-ink/70 p-8 text-slate-400">
-                No ingest result yet. Select a `.dem` file and run the mock parse route first.
+              <div className="mt-3 rounded-2xl border border-dashed border-line bg-ink/70 p-6 text-sm text-slate-400">
+                No ingest result yet. Import a `.viewer.json` or parse a `.dem` successfully first.
               </div>
             )}
           </div>
 
-          <div className="rounded-[24px] border border-line bg-panel/90 p-4">
+          <div className="rounded-[20px] border border-line bg-panel/90 p-3">
             <div className="flex items-center justify-between gap-3">
               <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-slate-500">
                 Top players
@@ -118,47 +132,41 @@ export default function HomePage() {
                 Current parse
               </div>
             </div>
-            <div className="mt-3 text-xl font-bold">
+            <div className="mt-2 text-lg font-bold">
               Player snapshot
             </div>
             {topPlayers.length ? (
-              <div className="mt-4 space-y-2.5">
+              <div className="mt-3 space-y-2">
                 {topPlayers.map((player) => (
                   <div
                     key={player.id}
-                    className="flex items-center justify-between rounded-[18px] border border-line bg-ink/80 px-4 py-3"
+                    className="flex items-center justify-between rounded-[14px] border border-line bg-ink/80 px-3 py-2.5"
                   >
                     <div>
-                      <div className="text-xl font-bold">{player.name}</div>
-                      <div className="mt-1 font-mono text-xs uppercase tracking-[0.18em] text-slate-500">
+                      <div className="text-lg font-bold">{player.name}</div>
+                      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-slate-500">
                         {player.side} side
                       </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-5 text-right">
+                    <div className="grid grid-cols-2 gap-4 text-right">
                       <div>
-                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
+                        <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">
                           K
                         </div>
-                        <div className="text-xl font-bold">{player.kills}</div>
+                        <div className="text-lg font-bold">{player.kills}</div>
                       </div>
                       <div>
-                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
+                        <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">
                           D
                         </div>
-                        <div className="text-xl font-bold">{player.deaths}</div>
-                      </div>
-                      <div>
-                        <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
-                          ADR
-                        </div>
-                        <div className="text-xl font-bold">{player.adr}</div>
+                        <div className="text-lg font-bold">{player.deaths}</div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="mt-4 rounded-2xl border border-dashed border-line bg-ink/70 p-8 text-slate-400">
+              <div className="mt-3 rounded-2xl border border-dashed border-line bg-ink/70 p-6 text-sm text-slate-400">
                 Player summaries will appear here after ingest.
               </div>
             )}

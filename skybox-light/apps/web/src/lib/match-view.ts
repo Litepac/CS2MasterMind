@@ -1,4 +1,4 @@
-import type { MatchSummary, PlayerSummary } from "@/lib/types";
+import type { EventKind, MatchSummary, PlayerSummary } from "@/lib/types";
 
 export type RoundPreview = {
   number: number;
@@ -13,7 +13,7 @@ export type TimelinePreview = {
   id: string;
   roundNumber: number;
   tick: number;
-  kind: "kill" | "smoke" | "flash" | "plant";
+  kind: EventKind;
   player: string;
   side: "CT" | "T";
   note: string;

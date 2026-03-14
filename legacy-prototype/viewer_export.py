@@ -9,7 +9,22 @@ import json
 from pathlib import Path
 
 import pandas as pd
-from awpy import Demo
+
+try:
+    from awpy import Demo
+except Exception:
+    from awpy.demo import Demo
+
+
+def json_default(value):
+    if hasattr(value, "item"):
+        try:
+            return value.item()
+        except Exception:
+            pass
+    if isinstance(value, Path):
+        return str(value)
+    raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
 
 
 MAP_DATA = {
@@ -512,7 +527,7 @@ def export_viewer_data(demo_path: str | Path, output_path: str | Path = None):
     out_path = Path(output_path) if output_path else demo_path.with_suffix(".viewer.json")
     print(f"  Writing {out_path.name}...")
     with open(out_path, "w", encoding="utf-8") as handle:
-        json.dump(output, handle, separators=(",", ":"), ensure_ascii=False)
+        json.dump(output, handle, separators=(",", ":"), ensure_ascii=False, default=json_default)
 
     size_mb = out_path.stat().st_size / 1024 / 1024
     print(f"\n  Done! {out_path} ({size_mb:.1f} MB)")
