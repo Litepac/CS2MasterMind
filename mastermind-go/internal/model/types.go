@@ -18,10 +18,14 @@ type ReplayFile struct {
 }
 
 type MapMetadata struct {
-	PosX  float64 `json:"posX"`
-	PosY  float64 `json:"posY"`
-	Scale float64 `json:"scale"`
-	Size  int     `json:"size"`
+	PosX        float64 `json:"posX"`
+	PosY        float64 `json:"posY"`
+	Scale       float64 `json:"scale"`
+	Size        int     `json:"size"`
+	StageLeft   float64 `json:"stageLeft"`
+	StageTop    float64 `json:"stageTop"`
+	StageWidth  float64 `json:"stageWidth"`
+	StageHeight float64 `json:"stageHeight"`
 }
 
 type Player struct {

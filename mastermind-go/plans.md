@@ -8,8 +8,7 @@ This is the working plan for the parser-first reboot.
 - Add direct player switching controls on stage, not only via roster.
 
 ## In Progress
-- Tighten the first `mastermind.replay.json` viewer so event density and replay readability are good enough for iteration.
-- Reduce utility spam in the timeline and event inspection so the viewer reflects actionable moments instead of raw event floods.
+- Validate the reset viewer against more real demos before reintroducing extra overlays or inspection UI.
 
 ## Done
 - Clone the upstream `demoinfocs-golang` repository into `demoinfocs-parser` for reference.
@@ -29,6 +28,11 @@ This is the working plan for the parser-first reboot.
 - Aggregate timeline utility markers so the first viewer no longer renders raw utility spam one-by-one.
 - Make playback time-based instead of raw `requestAnimationFrame` speed.
 - Skip inter-round dead-space in the viewer so stale corpse positions are not shown as if they were live round states.
+- Switch radar bounds detection away from alpha-only detection, because the radar images use opaque black padding.
+- Fix follow-up replay issues from review: safe roster rendering, accurate visible-event counts, radar auto-bounds fallback for default maps, and round-end cleanup for lingering timed utility.
+- Verify that `mastermind-go` frame coordinates match `legacy-prototype/testdemo.viewer.json` for the same ticks.
+- Discard stage-bounds-based projection in the viewer and switch back to full-canvas legacy projection because the exported coordinates already match the legacy format.
+- Reset `viewer/index.html` to a simpler baseline focused on rounds, kill feed, and a trustworthy 2D stage before adding richer replay inspection back.
 
 ## Blocked
 - The viewer still needs cleaner event inspection and real facing / trajectory data before it resembles Skybox-level replay depth.

@@ -20,12 +20,12 @@ import (
 const frameSampleStep = 64
 
 type collector struct {
-	replay       model.ReplayFile
-	playerIndex  map[string]int
-	currentRound int
-	matchStarted bool
-	scoreCT      int
-	scoreT       int
+	replay        model.ReplayFile
+	playerIndex   map[string]int
+	currentRound  int
+	matchStarted  bool
+	scoreCT       int
+	scoreT        int
 	activeUtility map[string]int
 }
 
@@ -55,10 +55,14 @@ func ParseDemo(demoPath string) (model.ReplayFile, error) {
 			c.replay.MapName = strings.TrimSpace(m.GetMapName())
 			if meta, ok := maps.Lookup(c.replay.MapName); ok {
 				c.replay.Map = &model.MapMetadata{
-					PosX:  meta.PosX,
-					PosY:  meta.PosY,
-					Scale: meta.Scale,
-					Size:  meta.Size,
+					PosX:        meta.PosX,
+					PosY:        meta.PosY,
+					Scale:       meta.Scale,
+					Size:        meta.Size,
+					StageLeft:   meta.StageLeft,
+					StageTop:    meta.StageTop,
+					StageWidth:  meta.StageWidth,
+					StageHeight: meta.StageHeight,
 				}
 			}
 		}
@@ -106,6 +110,7 @@ func ParseDemo(demoPath string) (model.ReplayFile, error) {
 		}
 		round.ScoreCT = c.scoreCT
 		round.ScoreT = c.scoreT
+		c.finishOpenUtility(round.EndTick)
 	})
 
 	p.RegisterEventHandler(func(e events.Kill) {
@@ -228,6 +233,8 @@ func ParseDemo(demoPath string) (model.ReplayFile, error) {
 		return model.ReplayFile{}, fmt.Errorf("parse demo: %w", err)
 	}
 
+	c.finishOpenUtility(p.GameState().IngameTick())
+
 	for i := range c.replay.Rounds {
 		if c.replay.Rounds[i].EndTick == 0 && len(c.replay.Frames) > 0 {
 			c.replay.Rounds[i].EndTick = c.replay.Frames[len(c.replay.Frames)-1].Tick
@@ -276,6 +283,24 @@ func (c *collector) finishTimedUtility(utilityType string, entityID, tick int) {
 	}
 	c.replay.Utility[index].EndTick = tick
 	delete(c.activeUtility, key)
+}
+
+func (c *collector) finishOpenUtility(tick int) {
+	if tick <= 0 {
+		return
+	}
+	for key, index := range c.activeUtility {
+		if index >= 0 && index < len(c.replay.Utility) {
+			endTick := tick
+			if endTick < c.replay.Utility[index].Tick {
+				endTick = c.replay.Utility[index].Tick
+			}
+			if c.replay.Utility[index].EndTick == 0 {
+				c.replay.Utility[index].EndTick = endTick
+			}
+		}
+		delete(c.activeUtility, key)
+	}
 }
 
 func (c *collector) upsertPlayer(pl *common.Player) {
